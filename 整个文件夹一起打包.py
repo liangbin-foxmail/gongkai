@@ -86,5 +86,8 @@ def main():
             zf.write(abs_path, arc_path)
 
     print(f"已生成加密 zip: {zip_path}")
+
+    import A00上传所有文件到仓库foxmail_gongkai
+    A00上传所有文件到仓库foxmail_gongkai.开始()
 if __name__ == '__main__':
     main()
