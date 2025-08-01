@@ -13,7 +13,7 @@ from configparser import ConfigParser   # ← 新增
 SKIP_EXT   = {'.exe'}
 SOURCE_DIR = "github注册-通用"
 BASE_NAME  = "gitub_auto"
-CONFIG_FILE = "../qinglong_foxmail_qinglong/配置文件.ini"  # ← 新增
+CONFIG_FILE = "配置文件.ini"  # ← 新增
 # ----------------------------------------
 
 def get_password():
