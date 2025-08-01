@@ -2,9 +2,9 @@
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-:: ---------- 1. 正确获取桌面路径 ----------
-for /f "tokens=2*" %%i in ('reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" /v Desktop 2^>nul') do set "DESKTOP=%%j"
-if not defined DESKTOP set "DESKTOP=%USERPROFILE%\Desktop"
+:: ---------- 正确桌面路径 ----------
+for /f "delims=" %%D in ("%USERPROFILE%\Desktop") do set "DESKTOP=%%~fD"
+
 
 :: ---------- 2. 读取配置文件 ----------
 set "INI=%~dp0配置文件.ini"
@@ -68,6 +68,19 @@ if %errorlevel% neq 0 (
     "%DESKTOP%\python-3.13.5-amd64.exe" /quiet InstallAllUsers=1 PrependPath=1
     timeout /t 10 /nobreak >nul
 )
+
+
+:: ---------- -. 刷新环境变量 ----------
+echo 刷新环境变量...
+set "PATH=%PATH%;C:\Program Files\Python313\Scripts;C:\Program Files\Python313"
+
+:: ---------- -. 验证 Python ----------
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo 安装后仍找不到 Python，请重启终端或手动安装
+    pause & goto :eof
+)
+
 
 :: ---------- 8. 永久添加腾讯源并信任 ----------
 echo [global] > "%APPDATA%\pip\pip.ini"
