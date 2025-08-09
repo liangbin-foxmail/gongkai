@@ -13,21 +13,10 @@ from configparser import ConfigParser   # ← 新增
 SKIP_EXT   = {'.exe'}
 SOURCE_DIR = "github注册-通用"
 BASE_NAME  = "gitub_auto"
-CONFIG_FILE = "配置文件.ini"  # ← 新增
+# CONFIG_FILE = "配置文件.ini"  # ← 新增
 # ----------------------------------------
 
-def get_password():
-    """从配置文件.ini 读取 [DEFAULT] 节下的 '密码' 字段"""
-    cfg_path = os.path.join(os.path.dirname(__file__), CONFIG_FILE)
-    if not os.path.isfile(cfg_path):
-        raise FileNotFoundError(f"缺少配置文件：{CONFIG_FILE}")
 
-    cfg = ConfigParser()
-    cfg.read(cfg_path, encoding="utf-8")
-    pwd = cfg["DEFAULT"].get("密码")
-    if not pwd:
-        raise ValueError(f"{CONFIG_FILE} 中缺少 '密码' 字段")
-    return pwd.strip()
 
 def collect_files(root_dir):
     """遍历 root_dir，返回 (绝对路径, 压缩包内相对路径) 列表，跳过 .exe"""
@@ -74,7 +63,6 @@ def main():
 
     # 3) 创建加密 zip
     zip_path = os.path.join(script_dir, zip_name)
-    password = get_password()               # ← 现在读配置文件
     with pyzipper.AESZipFile(zip_path, 'w',
                              compression=pyzipper.ZIP_DEFLATED,
                              encryption=pyzipper.WZ_AES) as zf:
@@ -85,8 +73,31 @@ def main():
 
     print(f"已生成加密 zip: {zip_path}")
 
+
+
+
+    # --- 新增：就地更新一键部署.cmd ---
+    cmd_file = os.path.join(script_dir, "一键部署.ps1")
+    if os.path.isfile(cmd_file):
+        with open(cmd_file, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # 1. 把 gitub_auto\d+\.zip 整体换成 gitub_auto018.zip
+        content = re.sub(
+            r"gitub_auto\d+\.zip",  # 匹配 gitub_auto011.zip
+            zip_name,  # gitub_auto018.zip
+            content,
+            count=1
+        )
+
+        with open(cmd_file, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"已更新一键部署.ps1 → {zip_name}")
+
     import A00上传所有文件到仓库foxmail_gongkai
     A00上传所有文件到仓库foxmail_gongkai.开始()
 
 if __name__ == '__main__':
+    password = "xx1afdsfdsgbbb-----......"
+
     main()
